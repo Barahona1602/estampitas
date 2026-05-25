@@ -152,7 +152,7 @@
       <input class="name-input" id="nameA" type="text" placeholder="Ej: Pablo" maxlength="30" />
     </div>
     <textarea id="textA" placeholder="Lista de A — formato figuritas.app (I need / Swaps) o manual (Me faltan / Repetidas)"></textarea>
-    <p class="hint">Acepta ambos formatos mezclados.</p>
+    <p class="hint">Soporta: figuritas.app · moovtech.app · formato manual</p>
   </div>
   <div class="panel">
     <div class="name-row">
@@ -228,31 +228,57 @@ function parseList(raw) {
   const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
   const need = {}, swaps = {};
   const rawLow = raw.toLowerCase();
-  const isApp = rawLow.includes('i need') || rawLow.includes('swaps');
-  const isManual = rawLow.includes('me faltan') || rawLow.includes('repetidas');
+
+  // Detect format — moovtech check first to avoid false positives
+  const isMoovtech     = rawLow.includes('missing sticker') || rawLow.includes('duplicate sticker');
+  const isFiguritasApp = !isMoovtech && (rawLow.includes('i need') || rawLow.includes('swaps'));
+  const isManual       = rawLow.includes('me faltan') || rawLow.includes('repetidas');
+
   let section = null;
 
   for (const line of lines) {
     const lu = line.toLowerCase();
-    if (isApp) {
-      if (lu === 'i need') { section = 'need'; continue; }
-      if (lu === 'swaps') { section = 'swaps'; continue; }
+
+    // ── Section detection FIRST — before any skip logic ──
+    if (isMoovtech) {
+      if (lu.includes('missing sticker'))   { section = 'need';  continue; }
+      if (lu.includes('duplicate sticker')) { section = 'swaps'; continue; }
+    }
+    if (isFiguritasApp) {
+      if (lu === 'i need')  { section = 'need';  continue; }
+      if (lu === 'swaps')   { section = 'swaps'; continue; }
     }
     if (isManual) {
-      if (lu === 'me faltan') { section = 'need'; continue; }
-      if (lu === 'repetidas') { section = 'swaps'; continue; }
+      if (lu === 'me faltan')  { section = 'need';  continue; }
+      if (lu === 'repetidas')  { section = 'swaps'; continue; }
     }
+
     if (!section) continue;
-    if (lu.startsWith('download') || lu.startsWith('http') || lu.startsWith('figuritas') || lu.startsWith('usa mex')) continue;
-    const match = line.match(/^([A-Z]{2,4})\s*[^\d:]*:\s*([\d,\s]+)$/);
-    if (match) {
-      const country = match[1].trim();
-      const nums = match[2].split(',').map(n => n.trim()).filter(Boolean);
-      const target = section === 'need' ? need : swaps;
-      if (!target[country]) target[country] = [];
-      target[country].push(...nums);
-    }
+
+    // Skip non-data lines (only after section detection)
+    if (lu.startsWith('http') || lu.startsWith('download the app')
+        || lu.startsWith('figuritas') || lu.startsWith('usa mex')) continue;
+
+    // ── Parse country line ──
+    // Handles: "MEX: 1, 2, 3" · "MEX 🇲🇽: 1, 2, 3" · "MEX: 2(1x), 13(2x)"
+    const match = line.match(/^([A-Z]{2,4})\s*[^:]*:\s*(.+)$/);
+    if (!match) continue;
+
+    const country = match[1].trim();
+    const rawNums = match[2];
+
+    // Extract numbers, ignoring quantity suffixes like (1x) (2x)
+    const nums = [];
+    const numRe = /(\d+)(?:\(\d+x\))?/g;
+    let m;
+    while ((m = numRe.exec(rawNums)) !== null) nums.push(m[1]);
+
+    if (!nums.length) continue;
+    const target = section === 'need' ? need : swaps;
+    if (!target[country]) target[country] = [];
+    target[country].push(...nums);
   }
+
   return { need, swaps };
 }
 
