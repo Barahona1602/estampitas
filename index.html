@@ -58,60 +58,84 @@
   .btn-secondary:hover { border-color: var(--muted); }
   .btn-dl { background: var(--surface2); color: var(--green); border: 1px solid var(--green); }
   .btn-dl:hover { background: var(--green); color: #111; }
-
   #status { font-size: 12px; color: var(--muted); margin-left: auto; }
 
-  #results { padding: 1.75rem; display: none; }
+  /* ── zona de resultados ── */
+  #results { display: none; }
   #results.visible { display: block; }
 
-  .summary-bar { display: flex; gap: 1.5rem; margin-bottom: 1.75rem; flex-wrap: wrap; align-items: center; }
+  /* encabezado del resultado (NO se captura) */
+  .results-topbar {
+    padding: 1.25rem 1.75rem;
+    display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+  }
   .stat { display: flex; flex-direction: column; gap: 2px; }
-  .stat-val { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.6rem; line-height: 1; }
+  .stat-val { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.5rem; line-height: 1; }
   .stat-label { font-size: 11px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
   .val-a { color: var(--accent); }
   .val-b { color: var(--green); }
 
+  /* ── captura ── */
+  #capture-zone {
+    background: #0e0e10;
+    padding: 1.5rem 1.75rem 1.75rem;
+  }
+
+  .capture-header {
+    display: flex; align-items: baseline; gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #2e2e38;
+  }
+  .capture-header .ch-title {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; color: #f0c040;
+  }
+  .capture-header .ch-sub { font-size: 12px; color: #888890; }
+
   .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
   @media (max-width: 700px) { .results-grid { grid-template-columns: 1fr; } }
 
-  .exchange-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; position: relative; }
-  .block-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.75rem; gap: 0.75rem; }
-  .block-title { display: flex; flex-direction: column; gap: 4px; }
-  .block-title h2 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; }
+  .exchange-block {
+    background: #18181c;
+    border: 1px solid #2e2e38;
+    border-radius: 10px;
+    padding: 1.1rem 1.25rem;
+  }
+  .block-title { margin-bottom: 0.75rem; }
+  .block-title h2 {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.9rem;
+    display: flex; align-items: center; gap: 0.5rem; margin-bottom: 3px;
+  }
   .block-title p { font-size: 11px; color: var(--muted); }
 
-  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-  .dot-a { background: var(--accent); }
-  .dot-b { background: var(--green); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  .dot-a { background: #f0c040; }
+  .dot-b { background: #3ecf7a; }
 
   .country-rows { display: flex; flex-direction: column; gap: 5px; }
-  .country-row { display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.45rem 0.65rem; background: var(--surface2); border-radius: 7px; }
-  .country-code { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; color: var(--accent); min-width: 38px; padding-top: 2px; }
-  .stickers { color: var(--text); font-size: 12px; line-height: 1.5; word-break: break-word; }
-  .empty-msg { color: var(--muted); font-size: 12px; padding: 0.7rem 0.9rem; background: var(--surface2); border-radius: 7px; }
+  .country-row {
+    display: flex; align-items: flex-start; gap: 0.6rem;
+    padding: 0.4rem 0.6rem;
+    background: #222228;
+    border-radius: 7px;
+  }
+  .country-code { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; color: #f0c040; min-width: 38px; padding-top: 2px; flex-shrink: 0; }
+  .country-code.green { color: #3ecf7a; }
+  .stickers { color: #f0ede6; font-size: 11px; line-height: 1.55; word-break: break-word; font-family: 'DM Mono', monospace; }
+  .empty-msg { color: var(--muted); font-size: 12px; padding: 0.6rem 0.75rem; background: #222228; border-radius: 7px; }
 
-  /* Canvas de descarga (oculto en página) */
-  #dl-canvas-a, #dl-canvas-b { display: none; }
-
-  /* Tarjeta de imagen para exportar */
-  .export-card {
-    position: fixed; top: -9999px; left: -9999px;
-    background: #0e0e10; color: #f0ede6;
+  .capture-footer {
+    margin-top: 1.1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #2e2e38;
+    font-size: 10px;
+    color: #444450;
+    text-align: right;
     font-family: 'DM Mono', monospace;
-    width: 700px; padding: 2rem;
-    border-radius: 16px;
   }
-  .export-card .ec-title {
-    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem;
-    color: #f0c040; margin-bottom: 0.2rem;
-  }
-  .export-card .ec-sub { font-size: 12px; color: #888890; margin-bottom: 1.25rem; }
-  .export-card .ec-row { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.45rem 0.65rem; background: #222228; border-radius: 7px; margin-bottom: 5px; }
-  .export-card .ec-code { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; color: #f0c040; min-width: 40px; padding-top: 2px; }
-  .export-card .ec-nums { font-size: 12px; color: #f0ede6; line-height: 1.5; word-break: break-word; }
-  .export-card .ec-footer { margin-top: 1.25rem; font-size: 11px; color: #444450; text-align: right; }
-  .export-card.green .ec-title { color: #3ecf7a; }
-  .export-card.green .ec-code { color: #3ecf7a; }
+
+  .dl-btn-wrap { padding: 0.75rem 1.75rem; border-top: 1px solid var(--border); }
 </style>
 </head>
 <body>
@@ -127,16 +151,16 @@
       <span class="name-tag">Nombre A</span>
       <input class="name-input" id="nameA" type="text" placeholder="Ej: Pablo" maxlength="30" />
     </div>
-    <textarea id="textA" placeholder="Pega aquí la lista completa de A. Acepta formato figuritas.app (I need / Swaps) o manual (Me faltan / Repetidas)."></textarea>
-    <p class="hint">Formato app: secciones "I need" y "Swaps" — Formato manual: "Me faltan" y "Repetidas"</p>
+    <textarea id="textA" placeholder="Lista de A — formato figuritas.app (I need / Swaps) o manual (Me faltan / Repetidas)"></textarea>
+    <p class="hint">Acepta ambos formatos mezclados.</p>
   </div>
   <div class="panel">
     <div class="name-row">
       <span class="name-tag">Nombre B</span>
       <input class="name-input" id="nameB" type="text" placeholder="Ej: Hugo" maxlength="30" />
     </div>
-    <textarea id="textB" placeholder="Pega aquí la lista completa de B. Mismo formato."></textarea>
-    <p class="hint">Puedes mezclar formatos en cada cuadro.</p>
+    <textarea id="textB" placeholder="Lista de B — mismo formato"></textarea>
+    <p class="hint">Puedes mezclar formatos.</p>
   </div>
 </div>
 
@@ -147,51 +171,54 @@
 </div>
 
 <div id="results">
-  <div class="summary-bar">
+
+  <!-- barra superior con totales y botón descarga — no entra en la captura -->
+  <div class="results-topbar">
     <div class="stat">
       <span class="stat-val val-a" id="cnt-a">0</span>
-      <span class="stat-label" id="label-a">A puede dar a B</span>
+      <span class="stat-label" id="label-a">A → B</span>
     </div>
     <div class="stat">
       <span class="stat-val val-b" id="cnt-b">0</span>
-      <span class="stat-label" id="label-b">B puede dar a A</span>
-    </div>
-    <div style="margin-left:auto; display:flex; gap:0.6rem; flex-wrap:wrap;">
-      <button class="btn-dl" onclick="descargarImagen('a')">⬇ Imagen — <span id="dl-label-a">A → B</span></button>
-      <button class="btn-dl" onclick="descargarImagen('b')">⬇ Imagen — <span id="dl-label-b">B → A</span></button>
+      <span class="stat-label" id="label-b">B → A</span>
     </div>
   </div>
 
-  <div class="results-grid">
-    <div class="exchange-block" id="block-a">
-      <div class="block-header">
+  <!-- zona que se captura como imagen -->
+  <div id="capture-zone">
+    <div class="capture-header">
+      <span class="ch-title" id="cap-title">Intercambio</span>
+      <span class="ch-sub" id="cap-sub"></span>
+    </div>
+
+    <div class="results-grid">
+      <div class="exchange-block">
         <div class="block-title">
           <h2><span class="dot dot-a"></span> <span id="title-a-to-b">A le da a B</span></h2>
           <p id="sub-a-to-b">Repetidas de A que le faltan a B</p>
         </div>
+        <div class="country-rows" id="list-a-to-b"></div>
       </div>
-      <div class="country-rows" id="list-a-to-b"></div>
-    </div>
 
-    <div class="exchange-block" id="block-b">
-      <div class="block-header">
+      <div class="exchange-block">
         <div class="block-title">
           <h2><span class="dot dot-b"></span> <span id="title-b-to-a">B le da a A</span></h2>
           <p id="sub-b-to-a">Repetidas de B que le faltan a A</p>
         </div>
+        <div class="country-rows" id="list-b-to-a"></div>
       </div>
-      <div class="country-rows" id="list-b-to-a"></div>
     </div>
+
+    <div class="capture-footer" id="cap-footer"></div>
   </div>
+
+  <div class="dl-btn-wrap">
+    <button class="btn-dl" onclick="descargarImagen()">⬇ Descargar imagen del intercambio</button>
+  </div>
+
 </div>
 
-<!-- Tarjetas ocultas para exportar como imagen -->
-<div class="export-card" id="export-a"></div>
-<div class="export-card green" id="export-b"></div>
-
 <script>
-let lastAtoB = {}, lastBtoA = {};
-
 function getNombre(id) {
   const v = document.getElementById(id).value.trim();
   return v || (id === 'nameA' ? 'A' : 'B');
@@ -231,7 +258,7 @@ function parseList(raw) {
 
 function intersect(a, b) { const s = new Set(b); return a.filter(x => s.has(x)); }
 
-function renderRows(containerId, data) {
+function renderRows(containerId, data, accentClass) {
   const el = document.getElementById(containerId);
   el.innerHTML = '';
   const countries = Object.keys(data).sort();
@@ -241,12 +268,11 @@ function renderRows(containerId, data) {
   }
   let total = 0;
   for (const c of countries) {
-    const nums = data[c];
-    if (!nums || !nums.length) continue;
-    total += nums.length;
+    if (!data[c] || !data[c].length) continue;
+    total += data[c].length;
     const row = document.createElement('div');
     row.className = 'country-row';
-    row.innerHTML = `<span class="country-code">${c}</span><span class="stickers">${nums.join(', ')}</span>`;
+    row.innerHTML = `<span class="country-code${accentClass ? ' ' + accentClass : ''}">${c}</span><span class="stickers">${data[c].join(', ')}</span>`;
     el.appendChild(row);
   }
   return total;
@@ -265,31 +291,34 @@ function cruzar() {
     const B = parseList(rawB);
     const nA = getNombre('nameA'), nB = getNombre('nameB');
 
-    lastAtoB = {};
+    const aToB = {};
     for (const c of Object.keys(A.swaps)) {
       const m = intersect(A.swaps[c] || [], B.need[c] || []);
-      if (m.length) lastAtoB[c] = m;
+      if (m.length) aToB[c] = m;
     }
 
-    lastBtoA = {};
+    const bToA = {};
     for (const c of Object.keys(B.swaps)) {
       const m = intersect(B.swaps[c] || [], A.need[c] || []);
-      if (m.length) lastBtoA[c] = m;
+      if (m.length) bToA[c] = m;
     }
 
-    const cntA = renderRows('list-a-to-b', lastAtoB);
-    const cntB = renderRows('list-b-to-a', lastBtoA);
+    const cntA = renderRows('list-a-to-b', aToB, '');
+    const cntB = renderRows('list-b-to-a', bToA, 'green');
 
     document.getElementById('cnt-a').textContent = cntA;
     document.getElementById('cnt-b').textContent = cntB;
-    document.getElementById('label-a').textContent = `${nA} puede dar a ${nB}`;
-    document.getElementById('label-b').textContent = `${nB} puede dar a ${nA}`;
+    document.getElementById('label-a').textContent = `${nA} → ${nB}`;
+    document.getElementById('label-b').textContent = `${nB} → ${nA}`;
+
     document.getElementById('title-a-to-b').textContent = `${nA} le da a ${nB}`;
-    document.getElementById('sub-a-to-b').textContent = `Repetidas de ${nA} que le faltan a ${nB}`;
+    document.getElementById('sub-a-to-b').textContent = `${cntA} figurita${cntA !== 1 ? 's' : ''} · repetidas de ${nA} que le faltan a ${nB}`;
     document.getElementById('title-b-to-a').textContent = `${nB} le da a ${nA}`;
-    document.getElementById('sub-b-to-a').textContent = `Repetidas de ${nB} que le faltan a ${nA}`;
-    document.getElementById('dl-label-a').textContent = `${nA} → ${nB}`;
-    document.getElementById('dl-label-b').textContent = `${nB} → ${nA}`;
+    document.getElementById('sub-b-to-a').textContent = `${cntB} figurita${cntB !== 1 ? 's' : ''} · repetidas de ${nB} que le faltan a ${nA}`;
+
+    document.getElementById('cap-title').textContent = `${nA} ↔ ${nB}`;
+    document.getElementById('cap-sub').textContent = `${cntA + cntB} figuritas en total`;
+    document.getElementById('cap-footer').textContent = `Generado con Figuritas Cruce · ${new Date().toLocaleDateString('es-MX')}`;
 
     document.getElementById('results').classList.add('visible');
     status.textContent = `✓ Listo — ${cntA + cntB} figuritas a intercambiar`;
@@ -299,68 +328,28 @@ function cruzar() {
   }
 }
 
-function buildExportHTML(data, titulo, subtitulo, accentColor) {
-  const countries = Object.keys(data).sort();
-  if (!countries.length) return `<div style="font-size:13px;color:#888890;padding:1rem 0;">Sin cruces para este intercambio.</div>`;
-  let rows = '';
-  for (const c of countries) {
-    if (!data[c] || !data[c].length) continue;
-    rows += `<div class="ec-row"><span class="ec-code">${c}</span><span class="ec-nums">${data[c].join(', ')}</span></div>`;
-  }
-  return rows;
-}
-
-async function descargarImagen(quien) {
+async function descargarImagen() {
   const nA = getNombre('nameA'), nB = getNombre('nameB');
-  const isA = quien === 'a';
-  const data = isA ? lastAtoB : lastBtoA;
-  const titulo = isA ? `${nA} le da a ${nB}` : `${nB} le da a ${nA}`;
-  const subtitulo = isA ? `Repetidas de ${nA} que le faltan a ${nB}` : `Repetidas de ${nB} que le faltan a ${nA}`;
-  const accentColor = isA ? '#f0c040' : '#3ecf7a';
-  const cardId = isA ? 'export-a' : 'export-b';
-  const card = document.getElementById(cardId);
-
-  const countries = Object.keys(data).sort();
-  let rowsHTML = '';
-  for (const c of countries) {
-    if (!data[c] || !data[c].length) continue;
-    rowsHTML += `<div class="ec-row"><span class="ec-code">${c}</span><span class="ec-nums">${data[c].join(', ')}</span></div>`;
-  }
-  if (!rowsHTML) rowsHTML = `<div style="font-size:13px;color:#888890;padding:0.5rem 0;">Sin cruces.</div>`;
-
-  card.style.display = 'block';
-  card.style.position = 'fixed';
-  card.style.top = '-9999px';
-  card.style.left = '-9999px';
-  card.innerHTML = `
-    <div class="ec-title">🗂 ${titulo}</div>
-    <div class="ec-sub">${subtitulo} · figuritas</div>
-    ${rowsHTML}
-    <div class="ec-footer">Generado con Figuritas Cruce · ${new Date().toLocaleDateString('es-MX')}</div>
-  `;
-
-  // Forzar que los estilos inline de ec-code tomen el color correcto
-  card.querySelectorAll('.ec-code').forEach(el => { el.style.color = accentColor; });
-  card.querySelector('.ec-title').style.color = accentColor;
-
-  await new Promise(r => setTimeout(r, 80));
+  const zone = document.getElementById('capture-zone');
+  const status = document.getElementById('status');
+  status.textContent = 'Generando imagen…';
 
   try {
-    const canvas = await html2canvas(card, {
+    const canvas = await html2canvas(zone, {
       backgroundColor: '#0e0e10',
       scale: 2,
       useCORS: true,
-      logging: false
+      logging: false,
+      windowWidth: zone.scrollWidth,
+      windowHeight: zone.scrollHeight
     });
-    card.style.display = 'none';
     const link = document.createElement('a');
-    const fname = `${titulo.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '')}.png`;
-    link.download = fname;
+    link.download = `figuritas_${nA}_${nB}.png`.replace(/\s+/g, '_');
     link.href = canvas.toDataURL('image/png');
     link.click();
+    status.textContent = '✓ Imagen descargada';
   } catch(e) {
-    card.style.display = 'none';
-    alert('Error al generar imagen. Intenta de nuevo.');
+    status.textContent = '✗ Error al generar imagen.';
     console.error(e);
   }
 }
@@ -372,7 +361,6 @@ function limpiar() {
   document.getElementById('nameB').value = '';
   document.getElementById('results').classList.remove('visible');
   document.getElementById('status').textContent = '';
-  lastAtoB = {}; lastBtoA = {};
 }
 </script>
 </body>
