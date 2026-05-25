@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Figuritas — Cruce de Repetidas</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root {
+    --bg: #0e0e10;
+    --surface: #18181c;
+    --surface2: #222228;
+    --border: #2e2e38;
+    --accent: #f0c040;
+    --green: #3ecf7a;
+    --text: #f0ede6;
+    --muted: #888890;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; font-size: 14px; min-height: 100vh; }
+
+  header { padding: 2.5rem 2rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+  header h1 { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; color: var(--accent); }
+  header span { color: var(--muted); font-size: 13px; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border); }
+  @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+
+  .panel { padding: 1.5rem 1.75rem; border-right: 1px solid var(--border); }
+  .panel:last-child { border-right: none; }
+
+  .name-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.7rem; }
+  .name-tag { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+  .name-input {
+    flex: 1; background: transparent; border: none; border-bottom: 1px solid var(--border);
+    color: var(--text); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px;
+    padding: 0.2rem 0.3rem; outline: none; transition: border-color 0.2s;
+  }
+  .name-input:focus { border-color: var(--accent); }
+  .name-input::placeholder { color: var(--muted); font-weight: 400; font-size: 13px; }
+
+  .panel textarea {
+    width: 100%; height: 260px; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--text); font-family: 'DM Mono', monospace;
+    font-size: 12px; line-height: 1.6; padding: 0.9rem 1rem; resize: vertical; outline: none; transition: border-color 0.2s;
+  }
+  .panel textarea:focus { border-color: var(--accent); }
+  .hint { font-size: 11px; color: var(--muted); margin-top: 0.4rem; }
+
+  .actions { padding: 1.25rem 1.75rem; display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; border-bottom: 1px solid var(--border); }
+  button { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.05em; padding: 0.55rem 1.3rem; border-radius: var(--radius); border: none; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
+  button:active { transform: scale(0.97); }
+  .btn-primary { background: var(--accent); color: #111; }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--muted); }
+  .btn-dl { background: var(--surface2); color: var(--green); border: 1px solid var(--green); }
+  .btn-dl:hover { background: var(--green); color: #111; }
+
+  #status { font-size: 12px; color: var(--muted); margin-left: auto; }
+
+  #results { padding: 1.75rem; display: none; }
+  #results.visible { display: block; }
+
+  .summary-bar { display: flex; gap: 1.5rem; margin-bottom: 1.75rem; flex-wrap: wrap; align-items: center; }
+  .stat { display: flex; flex-direction: column; gap: 2px; }
+  .stat-val { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.6rem; line-height: 1; }
+  .stat-label { font-size: 11px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+  .val-a { color: var(--accent); }
+  .val-b { color: var(--green); }
+
+  .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  @media (max-width: 700px) { .results-grid { grid-template-columns: 1fr; } }
+
+  .exchange-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; position: relative; }
+  .block-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.75rem; gap: 0.75rem; }
+  .block-title { display: flex; flex-direction: column; gap: 4px; }
+  .block-title h2 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; }
+  .block-title p { font-size: 11px; color: var(--muted); }
+
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  .dot-a { background: var(--accent); }
+  .dot-b { background: var(--green); }
+
+  .country-rows { display: flex; flex-direction: column; gap: 5px; }
+  .country-row { display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.45rem 0.65rem; background: var(--surface2); border-radius: 7px; }
+  .country-code { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; color: var(--accent); min-width: 38px; padding-top: 2px; }
+  .stickers { color: var(--text); font-size: 12px; line-height: 1.5; word-break: break-word; }
+  .empty-msg { color: var(--muted); font-size: 12px; padding: 0.7rem 0.9rem; background: var(--surface2); border-radius: 7px; }
+
+  /* Canvas de descarga (oculto en página) */
+  #dl-canvas-a, #dl-canvas-b { display: none; }
+
+  /* Tarjeta de imagen para exportar */
+  .export-card {
+    position: fixed; top: -9999px; left: -9999px;
+    background: #0e0e10; color: #f0ede6;
+    font-family: 'DM Mono', monospace;
+    width: 700px; padding: 2rem;
+    border-radius: 16px;
+  }
+  .export-card .ec-title {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem;
+    color: #f0c040; margin-bottom: 0.2rem;
+  }
+  .export-card .ec-sub { font-size: 12px; color: #888890; margin-bottom: 1.25rem; }
+  .export-card .ec-row { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.45rem 0.65rem; background: #222228; border-radius: 7px; margin-bottom: 5px; }
+  .export-card .ec-code { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; color: #f0c040; min-width: 40px; padding-top: 2px; }
+  .export-card .ec-nums { font-size: 12px; color: #f0ede6; line-height: 1.5; word-break: break-word; }
+  .export-card .ec-footer { margin-top: 1.25rem; font-size: 11px; color: #444450; text-align: right; }
+  .export-card.green .ec-title { color: #3ecf7a; }
+  .export-card.green .ec-code { color: #3ecf7a; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🗂 Figuritas</h1>
+  <span>Cruce de repetidas · World Cup Stickers</span>
+</header>
+
+<div class="grid">
+  <div class="panel">
+    <div class="name-row">
+      <span class="name-tag">Nombre A</span>
+      <input class="name-input" id="nameA" type="text" placeholder="Ej: Pablo" maxlength="30" />
+    </div>
+    <textarea id="textA" placeholder="Pega aquí la lista completa de A. Acepta formato figuritas.app (I need / Swaps) o manual (Me faltan / Repetidas)."></textarea>
+    <p class="hint">Formato app: secciones "I need" y "Swaps" — Formato manual: "Me faltan" y "Repetidas"</p>
+  </div>
+  <div class="panel">
+    <div class="name-row">
+      <span class="name-tag">Nombre B</span>
+      <input class="name-input" id="nameB" type="text" placeholder="Ej: Hugo" maxlength="30" />
+    </div>
+    <textarea id="textB" placeholder="Pega aquí la lista completa de B. Mismo formato."></textarea>
+    <p class="hint">Puedes mezclar formatos en cada cuadro.</p>
+  </div>
+</div>
+
+<div class="actions">
+  <button class="btn-primary" onclick="cruzar()">⚡ Cruzar listas</button>
+  <button class="btn-secondary" onclick="limpiar()">Limpiar todo</button>
+  <span id="status"></span>
+</div>
+
+<div id="results">
+  <div class="summary-bar">
+    <div class="stat">
+      <span class="stat-val val-a" id="cnt-a">0</span>
+      <span class="stat-label" id="label-a">A puede dar a B</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val val-b" id="cnt-b">0</span>
+      <span class="stat-label" id="label-b">B puede dar a A</span>
+    </div>
+    <div style="margin-left:auto; display:flex; gap:0.6rem; flex-wrap:wrap;">
+      <button class="btn-dl" onclick="descargarImagen('a')">⬇ Imagen — <span id="dl-label-a">A → B</span></button>
+      <button class="btn-dl" onclick="descargarImagen('b')">⬇ Imagen — <span id="dl-label-b">B → A</span></button>
+    </div>
+  </div>
+
+  <div class="results-grid">
+    <div class="exchange-block" id="block-a">
+      <div class="block-header">
+        <div class="block-title">
+          <h2><span class="dot dot-a"></span> <span id="title-a-to-b">A le da a B</span></h2>
+          <p id="sub-a-to-b">Repetidas de A que le faltan a B</p>
+        </div>
+      </div>
+      <div class="country-rows" id="list-a-to-b"></div>
+    </div>
+
+    <div class="exchange-block" id="block-b">
+      <div class="block-header">
+        <div class="block-title">
+          <h2><span class="dot dot-b"></span> <span id="title-b-to-a">B le da a A</span></h2>
+          <p id="sub-b-to-a">Repetidas de B que le faltan a A</p>
+        </div>
+      </div>
+      <div class="country-rows" id="list-b-to-a"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Tarjetas ocultas para exportar como imagen -->
+<div class="export-card" id="export-a"></div>
+<div class="export-card green" id="export-b"></div>
+
+<script>
+let lastAtoB = {}, lastBtoA = {};
+
+function getNombre(id) {
+  const v = document.getElementById(id).value.trim();
+  return v || (id === 'nameA' ? 'A' : 'B');
+}
+
+function parseList(raw) {
+  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+  const need = {}, swaps = {};
+  const rawLow = raw.toLowerCase();
+  const isApp = rawLow.includes('i need') || rawLow.includes('swaps');
+  const isManual = rawLow.includes('me faltan') || rawLow.includes('repetidas');
+  let section = null;
+
+  for (const line of lines) {
+    const lu = line.toLowerCase();
+    if (isApp) {
+      if (lu === 'i need') { section = 'need'; continue; }
+      if (lu === 'swaps') { section = 'swaps'; continue; }
+    }
+    if (isManual) {
+      if (lu === 'me faltan') { section = 'need'; continue; }
+      if (lu === 'repetidas') { section = 'swaps'; continue; }
+    }
+    if (!section) continue;
+    if (lu.startsWith('download') || lu.startsWith('http') || lu.startsWith('figuritas') || lu.startsWith('usa mex')) continue;
+    const match = line.match(/^([A-Z]{2,4})\s*[^\d:]*:\s*([\d,\s]+)$/);
+    if (match) {
+      const country = match[1].trim();
+      const nums = match[2].split(',').map(n => n.trim()).filter(Boolean);
+      const target = section === 'need' ? need : swaps;
+      if (!target[country]) target[country] = [];
+      target[country].push(...nums);
+    }
+  }
+  return { need, swaps };
+}
+
+function intersect(a, b) { const s = new Set(b); return a.filter(x => s.has(x)); }
+
+function renderRows(containerId, data) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  const countries = Object.keys(data).sort();
+  if (!countries.length) {
+    el.innerHTML = '<div class="empty-msg">— Sin cruces para este intercambio —</div>';
+    return 0;
+  }
+  let total = 0;
+  for (const c of countries) {
+    const nums = data[c];
+    if (!nums || !nums.length) continue;
+    total += nums.length;
+    const row = document.createElement('div');
+    row.className = 'country-row';
+    row.innerHTML = `<span class="country-code">${c}</span><span class="stickers">${nums.join(', ')}</span>`;
+    el.appendChild(row);
+  }
+  return total;
+}
+
+function cruzar() {
+  const rawA = document.getElementById('textA').value;
+  const rawB = document.getElementById('textB').value;
+  const status = document.getElementById('status');
+
+  if (!rawA.trim() || !rawB.trim()) { status.textContent = '⚠ Llena ambos cuadros.'; return; }
+  status.textContent = 'Procesando…';
+
+  try {
+    const A = parseList(rawA);
+    const B = parseList(rawB);
+    const nA = getNombre('nameA'), nB = getNombre('nameB');
+
+    lastAtoB = {};
+    for (const c of Object.keys(A.swaps)) {
+      const m = intersect(A.swaps[c] || [], B.need[c] || []);
+      if (m.length) lastAtoB[c] = m;
+    }
+
+    lastBtoA = {};
+    for (const c of Object.keys(B.swaps)) {
+      const m = intersect(B.swaps[c] || [], A.need[c] || []);
+      if (m.length) lastBtoA[c] = m;
+    }
+
+    const cntA = renderRows('list-a-to-b', lastAtoB);
+    const cntB = renderRows('list-b-to-a', lastBtoA);
+
+    document.getElementById('cnt-a').textContent = cntA;
+    document.getElementById('cnt-b').textContent = cntB;
+    document.getElementById('label-a').textContent = `${nA} puede dar a ${nB}`;
+    document.getElementById('label-b').textContent = `${nB} puede dar a ${nA}`;
+    document.getElementById('title-a-to-b').textContent = `${nA} le da a ${nB}`;
+    document.getElementById('sub-a-to-b').textContent = `Repetidas de ${nA} que le faltan a ${nB}`;
+    document.getElementById('title-b-to-a').textContent = `${nB} le da a ${nA}`;
+    document.getElementById('sub-b-to-a').textContent = `Repetidas de ${nB} que le faltan a ${nA}`;
+    document.getElementById('dl-label-a').textContent = `${nA} → ${nB}`;
+    document.getElementById('dl-label-b').textContent = `${nB} → ${nA}`;
+
+    document.getElementById('results').classList.add('visible');
+    status.textContent = `✓ Listo — ${cntA + cntB} figuritas a intercambiar`;
+  } catch(e) {
+    status.textContent = '✗ Error al procesar. Revisa el formato.';
+    console.error(e);
+  }
+}
+
+function buildExportHTML(data, titulo, subtitulo, accentColor) {
+  const countries = Object.keys(data).sort();
+  if (!countries.length) return `<div style="font-size:13px;color:#888890;padding:1rem 0;">Sin cruces para este intercambio.</div>`;
+  let rows = '';
+  for (const c of countries) {
+    if (!data[c] || !data[c].length) continue;
+    rows += `<div class="ec-row"><span class="ec-code">${c}</span><span class="ec-nums">${data[c].join(', ')}</span></div>`;
+  }
+  return rows;
+}
+
+async function descargarImagen(quien) {
+  const nA = getNombre('nameA'), nB = getNombre('nameB');
+  const isA = quien === 'a';
+  const data = isA ? lastAtoB : lastBtoA;
+  const titulo = isA ? `${nA} le da a ${nB}` : `${nB} le da a ${nA}`;
+  const subtitulo = isA ? `Repetidas de ${nA} que le faltan a ${nB}` : `Repetidas de ${nB} que le faltan a ${nA}`;
+  const accentColor = isA ? '#f0c040' : '#3ecf7a';
+  const cardId = isA ? 'export-a' : 'export-b';
+  const card = document.getElementById(cardId);
+
+  const countries = Object.keys(data).sort();
+  let rowsHTML = '';
+  for (const c of countries) {
+    if (!data[c] || !data[c].length) continue;
+    rowsHTML += `<div class="ec-row"><span class="ec-code">${c}</span><span class="ec-nums">${data[c].join(', ')}</span></div>`;
+  }
+  if (!rowsHTML) rowsHTML = `<div style="font-size:13px;color:#888890;padding:0.5rem 0;">Sin cruces.</div>`;
+
+  card.style.display = 'block';
+  card.style.position = 'fixed';
+  card.style.top = '-9999px';
+  card.style.left = '-9999px';
+  card.innerHTML = `
+    <div class="ec-title">🗂 ${titulo}</div>
+    <div class="ec-sub">${subtitulo} · figuritas</div>
+    ${rowsHTML}
+    <div class="ec-footer">Generado con Figuritas Cruce · ${new Date().toLocaleDateString('es-MX')}</div>
+  `;
+
+  // Forzar que los estilos inline de ec-code tomen el color correcto
+  card.querySelectorAll('.ec-code').forEach(el => { el.style.color = accentColor; });
+  card.querySelector('.ec-title').style.color = accentColor;
+
+  await new Promise(r => setTimeout(r, 80));
+
+  try {
+    const canvas = await html2canvas(card, {
+      backgroundColor: '#0e0e10',
+      scale: 2,
+      useCORS: true,
+      logging: false
+    });
+    card.style.display = 'none';
+    const link = document.createElement('a');
+    const fname = `${titulo.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '')}.png`;
+    link.download = fname;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch(e) {
+    card.style.display = 'none';
+    alert('Error al generar imagen. Intenta de nuevo.');
+    console.error(e);
+  }
+}
+
+function limpiar() {
+  document.getElementById('textA').value = '';
+  document.getElementById('textB').value = '';
+  document.getElementById('nameA').value = '';
+  document.getElementById('nameB').value = '';
+  document.getElementById('results').classList.remove('visible');
+  document.getElementById('status').textContent = '';
+  lastAtoB = {}; lastBtoA = {};
+}
+</script>
+</body>
+</html>
